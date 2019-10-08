@@ -1,5 +1,5 @@
 
-const {google} = require('C:/Users/MuCool/node_modules/googleapis');
+const {google} = require('googleapis');
 const fs = require('fs');
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
