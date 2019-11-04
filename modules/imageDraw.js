@@ -1,4 +1,6 @@
 const { createCanvas, loadImage } = require('canvas')
+const config = require('./configurations')
+const codeFormater = require('./codeFormatter')
 
 var canvas ;
 var ctx ;//= canvas.getContext('2d');
@@ -235,23 +237,72 @@ function wrapText( text, x, y, maxWidth, lineHeight) {
  let context = ctx;
  var words = text.split(' ');
  var line = '';
-
-// console.log(maxWidth)
- for(var n = 0; n < words.length; n++) {
-   var testLine = line + words[n] + ' ';
-   var metrics = context.measureText(testLine);
-   var testWidth = metrics.width;
-   //console.log('word Width',testWidth)
-   if (testWidth > maxWidth && n > 0) {
-     context.fillText(line, x, y);
-     line = words[n] + ' ';
-     y += lineHeight;
-   }
-   else {
-     line = testLine;
-   }
+//console.log(text)
+ let penSetting ={
+   x:x,
+   y:y,
+   width:maxWidth,
+   lineHeight:lineHeight,
+   isWrite:false,
+   isApplicableFromNextLine:false
  }
- context.fillText(line, x, y);
+
+ text = codeFormater.getFormatedCode( codeFormater.wrapText(context,text,maxWidth)).split(" ");
+ console.log(text)
+ for(var n = 0; n < text.length; n++) {
+  let found = false;
+  
+
+   config.wordFormating.forEach(e=>{
+
+    penSetting.isWrite=false;
+    penSetting.isApplicableFromNextLine = false;
+
+    let initailX = penSetting.x;
+    let initailY = penSetting.y;
+
+     if(e.deliminator.trim() == text[n].trim()){
+       console.log(e.deliminator)
+        e.operation(penSetting);
+     }
+
+    
+
+     if(penSetting.isApplicableFromNextLine){
+      console.log(penSetting)
+      context.fillText(line+e.replaceWith,initailX,initailY);
+      line= " ";
+      found = true;
+     }
+     else if(penSetting.isWrite){
+      console.log(penSetting)
+       context.fillText(line+e.replaceWith,penSetting.x,penSetting.y);
+       line=  " ";
+       found = true;
+     }
+     
+
+   })
+   
+
+   if(!found)
+    line = line +" "+ text[n] ;
+    else{
+      line = ""
+    }
+  
+    
+
+  
+ }
+
+ if(line){
+  
+   context.fillText(line,penSetting.x,penSetting.y+16);
+   line=  " ";
+   found = true;
+ }
+ 
 }
 
 function generateColor(){
