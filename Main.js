@@ -10,10 +10,16 @@ var saveImage = require('./modules/SaveImage')
 var basePath ="pb/imgKnowledge"
  //var endPoint="http://52.66.240.183/"
 var endPoint="http://localhost:9000/"
+var router = require('./Routes/api-route')
+var cors = require('cors')
+
 
 var app = new express();
 
+
+app.use(cors());
 app.use(express.static(process.env.PWD));
+router(app)
 app.get('/', function (req, res){
 
 
